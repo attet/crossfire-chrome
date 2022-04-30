@@ -27,7 +27,7 @@ chrome.extension.sendRequest({name: "getPreferences"},
     var modifierPressed = false;
     var CROSSFIRE_CHROME_FOCUS = "crossfire-chrome-focus";
 
-    addStyle(".crossfire-chrome-focus:focus {outline: 2px solid #6baee6;}");
+    addStyle(".crossfire-chrome-focus:focus {border: 2px solid #6baee6;}");
 
     function addStyle(css) {
       var heads = document.getElementsByTagName("head");
@@ -116,7 +116,7 @@ chrome.extension.sendRequest({name: "getPreferences"},
           }
         }
       }
-      return -1;
+      return -10000000;
     }
 
     function navigateNext(links, axis, direction) {
@@ -133,10 +133,9 @@ chrome.extension.sendRequest({name: "getPreferences"},
       for (var i = start,l = links.length; 0 <= i  && i < l; i += direction) {
         if (!ignore) {
           var distance = isTarget(activeRect, links[i].rect, axis, direction);
-          if (distance < 0) continue;
-          if (minDistance < 0 || distance < minDistance) {
-        minDistance = distance;
-        nearestNode = links[i].dom;
+          if (minDistance < 0 || Math.abs(distance) < minDistance) {
+            minDistance = Math.abs(distance);
+            nearestNode = links[i].dom;
           }
         }
         if (links[i].dom == document.activeElement) { //XXX want to use 'active' but not works ...
@@ -152,7 +151,7 @@ chrome.extension.sendRequest({name: "getPreferences"},
       node.classList.add(CROSSFIRE_CHROME_FOCUS);
       var listener = node.addEventListener('blur', function(e) {
         node.classList.remove(CROSSFIRE_CHROME_FOCUS);
-        node.removeEventListener(listener);
+        node.removeEventListener('blur', listener);
       }, false);
       node.focus();
     }
